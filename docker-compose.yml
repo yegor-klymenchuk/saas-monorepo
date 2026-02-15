@@ -6,7 +6,8 @@ services:
     container_name: tanstack-kit-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: tanstack-kit
+      DATABASE_HOST: tanstack-kit
+      POSTGRES_USER: tanstack-start-db-ygaaaz
       POSTGRES_PASSWORD: 123456789
       POSTGRES_DB: test
     ports:
@@ -21,4 +22,3 @@ services:
 
 volumes:
   postgres_data:
-
