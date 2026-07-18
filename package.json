@@ -11,8 +11,7 @@
   "scripts": {
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:backend": "pnpm --filter backend dev",
-    "build": "pnpm run build:packages && pnpm run --filter \"./apps/*\" build",
-    "build:packages": "pnpm run --filter \"./packages/*\" build",
+    "build": "pnpm run --filter \"./apps/*\" build",
     "build:frontend": "pnpm --filter frontend build",
     "build:backend": "pnpm --filter backend build",
     "test": "pnpm run --filter \"./apps/*\" test",

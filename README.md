@@ -7,9 +7,8 @@ AI-powered SaaS pricing intelligence platform for optimizing pricing strategies.
 ```
 .
 ├── apps/
-│   ├── backend/          # Express API server
+│   ├── backend/          # Express API server and tRPC application router
 │   └── frontend/         # React + TanStack Start
-├── packages/             # Shared packages (future)
 ├── docs/                 # Feature specs & documentation
 └── docker-compose.yml    # PostgreSQL + Redis
 ```
@@ -67,7 +66,7 @@ Copy `.env.example` files in each app and configure:
 
 ```bash
 # Backend
-cp apps/backend/.env.example apps/backend/.env
+cp apps/backend/.env.example apps/backend/.env.development
 
 # Frontend
 cp apps/frontend/.env.example apps/frontend/.env
@@ -110,13 +109,15 @@ pnpm format              # Format all apps
 src/
 ├── database/
 │   └── schema/          # Drizzle schemas
-├── features/            # Feature modules
-│   └── competitor-tracking/
-│       ├── actions/     # Business logic
-│       ├── services/    # Core services
-│       ├── queue/       # BullMQ workers
-│       └── schemas/     # Validation schemas
+├── errors/              # ApplicationError and global category errors
+├── modules/             # Domain-oriented backend slices
+│   └── example/
+│       ├── example.repository.ts # Database access
+│       ├── example.service.ts    # Application behavior
+│       ├── example.router.ts     # tRPC transport boundary
+│       └── errors/               # Module-specific application errors
 ├── middlewares/         # Express middlewares
+├── trpc/                # Context, errors, middlewares, procedures and router
 ├── utils/               # Shared utilities
 └── main.ts              # Entry point
 ```

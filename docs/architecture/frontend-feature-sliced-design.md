@@ -36,15 +36,15 @@ API per segment, for example `@/shared/ui` and `@/shared/api`.
 ```text
 src/
 ├── app/
-│   ├── runtime/          # Query/API providers and app-wide tooling
-│   ├── router/           # Router construction
+│   ├── runtime/          # Query/tRPC providers and app-wide tooling
+│   ├── router/           # Request-scoped router and query client construction
 │   └── styles/           # Global styles
-├── routes/               # TanStack route definitions, guards, URL validation
+├── routes/               # TanStack route definitions, -lib guards, URL validation
 ├── pages/                # Home, sign-in, sign-up, dashboard
 ├── features/
 │   └── authentication/   # Auth interaction reused by multiple pages
 └── shared/
-    ├── api/              # Transport client and API response types
+    ├── api/              # Isomorphic tRPC client and API response types
     ├── auth/             # Better Auth client/session infrastructure
     ├── config/           # Validated environment configuration
     ├── lib/              # Generic helpers

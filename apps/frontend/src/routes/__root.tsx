@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { AppRuntime } from '@/app/runtime'
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import type { RouterContext } from '@/router'
+import { App } from '@/app/App'
 
-import appCss from '@/app/styles/styles.css?url'
+import appCss from '@/app/styles.css?url'
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
@@ -30,13 +31,17 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { queryClient, trpcClient } = Route.useRouteContext()
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <AppRuntime>{children}</AppRuntime>
+        <App queryClient={queryClient} trpcClient={trpcClient}>
+          {children}
+        </App>
         <Scripts />
       </body>
     </html>

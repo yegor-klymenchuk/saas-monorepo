@@ -55,6 +55,8 @@ Thumbs.db
 
 # Drizzle
 drizzle/
+!apps/backend/drizzle/
+!apps/backend/drizzle/**
 
 # TanStack
 .tanstack/

@@ -1,10 +1,12 @@
-import { z } from "zod";
-import dotenv from "dotenv";
+import { z } from 'zod'
+import dotenv from 'dotenv'
 
-dotenv.config();
+const nodeEnvironment = process.env.NODE_ENV ?? 'development'
+dotenv.config({ path: `.env.${nodeEnvironment}` })
+process.env.NODE_ENV ??= nodeEnvironment
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["test", "development"]),
+  NODE_ENV: z.enum(['test', 'development']),
 
   // Server
   SERVER_HOST: z.url(),
@@ -26,6 +28,6 @@ const envSchema = z.object({
   DATABASE_USERNAME: z.string(),
   DATABASE_PASSWORD: z.string(),
   DATABASE_NAME: z.string(),
-});
+})
 
-export const env = envSchema.parse(process.env);
+export const env = envSchema.parse(process.env)

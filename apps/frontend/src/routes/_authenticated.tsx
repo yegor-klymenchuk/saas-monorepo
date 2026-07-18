@@ -1,18 +1,22 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { authenticated } from '../middlewares/authenticated'
-import { getApiClient } from '@/shared/api'
+import { isUnauthorizedError } from '@/shared/api'
 
 export const Route = createFileRoute('/_authenticated')({
   server: {
     middleware: [authenticated],
   },
-  beforeLoad: async () => {
-    const response = await getApiClient().session.get.query()
+  beforeLoad: async ({ context }) => {
+    try {
+      const session = await context.queryClient.ensureQueryData(context.trpc.session.get.queryOptions())
 
-    if (response.status !== 200) {
-      throw redirect({ to: '/sign-in' })
+      return { session }
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        throw redirect({ to: '/sign-in' })
+      }
+
+      throw error
     }
-
-    return { session: response.body }
   },
 })

@@ -1,16 +1,22 @@
-import { beforeAll, afterAll, afterEach } from "vitest";
-import { sql } from "drizzle-orm";
-import { db } from "../database/database";
-import { Pool } from "pg";
+import { afterAll, afterEach, beforeAll } from 'vitest'
+import { sql } from 'drizzle-orm'
+import { Pool } from 'pg'
 
-let pool: Pool;
+import { db } from '../database/database'
+
+const databaseTestsEnabled = process.env.DATABASE_TESTS_ENABLED === 'true'
+let pool: Pool | undefined
 
 beforeAll(async () => {
+  if (!databaseTestsEnabled) return
+
   // Get the pool instance from the database connection
-  pool = (db as any).client as Pool;
-});
+  pool = (db as unknown as { client: Pool }).client
+})
 
 afterEach(async () => {
+  if (!databaseTestsEnabled) return
+
   // Clean up all tables after each test
   await db.execute(sql`
     DO $$
@@ -22,10 +28,12 @@ afterEach(async () => {
         EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE';
       END LOOP;
     END $$;
-  `);
-});
+  `)
+})
 
 afterAll(async () => {
+  if (!pool) return
+
   // Close the database connection pool
-  await pool.end();
-});
+  await pool.end()
+})

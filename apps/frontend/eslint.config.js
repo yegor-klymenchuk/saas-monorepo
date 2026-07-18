@@ -10,6 +10,23 @@ const config = [
   },
   ...tanstackConfig,
   ...pluginQuery.configs['flat/recommended'],
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['backend', 'backend/*'],
+              allowTypeImports: true,
+              message: 'Frontend code may only use type-only imports from the backend public API.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]
 
 export default config

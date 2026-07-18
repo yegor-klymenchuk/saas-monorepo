@@ -1,107 +1,145 @@
-# API migration: ts-rest to tRPC
+# API architecture: tRPC
 
-Status: proposed
+Status: implemented
 
 ## Decision
 
-Adopt tRPC 11 with its TanStack React Query integration instead of gRPC for
-the browser-facing application API.
+The browser-facing application API uses tRPC 11 with its TanStack React Query
+integration. Better Auth continues to own `/api/auth/*`; application RPC
+procedures are mounted by the Express backend under `/trpc`.
 
-This monorepo has TypeScript clients and a TypeScript server, already uses
-Zod, Express, and TanStack Query, and does not currently need language-neutral
-clients. tRPC therefore preserves end-to-end inference without adding
-Protocol Buffer generation or a gRPC-Web/Connect transport layer.
+This monorepo has TypeScript clients and a TypeScript server and already uses
+Zod, Express, and TanStack Query. tRPC therefore provides end-to-end type
+inference without Protocol Buffer generation or a browser-specific gRPC
+transport.
 
-The recommendation is based on the current official
-[tRPC overview](https://trpc.io/), the
+The implementation follows the official [tRPC overview](https://trpc.io/),
 [TanStack React Query integration](https://trpc.io/docs/client/tanstack-react-query/setup),
-and the [tRPC context model](https://trpc.io/docs/server/context).
+and [Express adapter](https://trpc.io/docs/server/adapters/express).
 
-gRPC or ConnectRPC should be reconsidered if the API must support non-TypeScript
-clients, independently deployed services, strict language-neutral schemas, or
-high-volume streaming. Native gRPC is not directly available to browsers;
-browser clients require gRPC-Web or a compatible protocol.
+gRPC or ConnectRPC should be reconsidered if the API must support
+non-TypeScript clients, independently deployed services, language-neutral
+schemas, or high-volume streaming.
 
-## Current state
-
-- ts-rest is used only for `GET /api/session`.
-- Better Auth owns `/api/auth/*` and should remain unchanged.
-- The frontend wraps ts-rest and TanStack Query in a single shared client.
-- The current ts-rest packages are pinned to `3.53.0-rc.1`.
-
-The ts-rest repository is not archived, but the installed version is a
-pre-release published on 2025-06-02 and upstream activity has slowed. That is
-enough reason to remove the dependency deliberately, but not to rush a
-big-bang migration.
-
-## Target boundary
+## Runtime flow
 
 ```mermaid
 flowchart LR
-    Browser["TanStack Start browser"] --> TRPC["/trpc<br/>tRPC HTTP batch link"]
+    Browser["TanStack Start browser"] --> TRPC["/trpc<br/>tRPC HTTP batching"]
     SSR["TanStack Start SSR"] --> TRPC
     Browser --> Auth["/api/auth/*<br/>Better Auth"]
     SSR --> Auth
-    TRPC --> Context["request context<br/>session + services"]
+    TRPC --> Context["request context<br/>serialized session"]
     Context --> BetterAuth["Better Auth"]
-    Context --> Services["application services"]
 ```
 
-Use `@trpc/tanstack-react-query`, which tRPC 11 recommends over its classic
-React Query client. Reuse the existing QueryClient and create a new QueryClient
-per SSR request so caches are never shared between users.
+The backend creates the tRPC context once per HTTP request and resolves the
+Better Auth session from the incoming cookie headers. The shared session
+procedure is protected and returns a typed `UNAUTHORIZED` error when no session
+exists. Its output is validated by Zod before it leaves the server.
 
-## Package design
+Browser requests use `credentials: include`. SSR requests explicitly forward
+the Better Auth session cookie to the backend.
 
-Evolve `packages/contracts` into an API package rather than importing types
-directly from one app into another:
+## Backend ownership
 
 ```text
-packages/api/
-├── src/context.ts             # Context interface, no Express dependency
-├── src/trpc.ts                # initTRPC, procedures and middleware
-├── src/router.ts              # appRouter and exported AppRouter type
-└── src/session/
-    ├── session.schema.ts      # Zod output schema
-    └── session.router.ts      # session.get procedure
+apps/backend/src/
+├── errors/
+│   ├── ApplicationError.ts        # Base application error contract
+│   ├── BadRequestError.ts         # Global error categories
+│   ├── ForbiddenError.ts
+│   ├── NotFoundError.ts
+│   ├── UnauthorizedError.ts
+│   ├── UnprocessableContentError.ts
+│   └── ValidationError.ts
+├── trpc/
+│   ├── context.ts                 # Request-scoped authentication context
+│   ├── instance.ts                # tRPC initialization and error formatter
+│   ├── procedures.ts              # Public and authenticated procedures
+│   ├── errors/
+│   │   ├── formatTRPCError.ts     # Serialized client error shape
+│   │   ├── getTRPCErrorCode.ts    # Application category → tRPC code
+│   │   └── toTRPCError.ts         # ApplicationError → native TRPCError
+│   ├── middlewares/
+│   │   ├── applicationErrorMiddleware.ts
+│   │   └── authenticationMiddleware.ts
+│   ├── router.ts                  # Composition root and AppRouter type
+│   └── index.ts                   # Type-only frontend public API
+└── modules/
+    ├── example/
+    │   ├── example.repository.ts  # Drizzle data access
+    │   ├── example.service.ts     # Application behavior
+    │   ├── example.router.ts      # Validation and tRPC procedures
+    │   └── errors/
+    │       └── ExampleMessageNotFoundError.ts
+    └── session/
+        ├── session.schema.ts
+        └── session.router.ts
 ```
 
-The backend supplies the request-scoped context implementation. Context should
-contain the authenticated session and application services/repositories, not
-raw global state. This keeps Better Auth and database infrastructure in the
-backend while letting the API package expose `AppRouter` to the frontend with
-a type-only import.
+The backend owns the router runtime, services, repositories, and application
+errors. The frontend imports `AppRouter` and `SessionResponse` only through
+`backend/trpc` with `import type`, so backend code does not enter the browser
+bundle. An ESLint boundary rejects runtime imports from the backend.
 
-## Migration phases
+## Frontend integration
 
-1. Add characterization tests for authenticated and unauthenticated session
-   responses before changing transport code.
-2. Introduce the API package with `@trpc/server`, the context contract,
-   `appRouter`, and a `session.get` query with Zod output validation.
-3. Mount the Express tRPC adapter at `/trpc` beside the existing Better Auth
-   and ts-rest endpoints. Create context once per request and derive the
-   session from the incoming cookie headers.
-4. Add the isomorphic frontend client in `shared/api` using
-   `@trpc/client` and `@trpc/tanstack-react-query`. Browser calls use
-   credentials; SSR calls explicitly forward the Better Auth cookie.
-5. Migrate the authenticated route guard and dashboard session query to
-   `session.get`. Keep the ts-rest endpoint active during this phase.
-6. Verify status/error mapping, cookie forwarding, SSR cache isolation,
-   batching, redirects, and the signed-in dashboard flow.
-7. Remove the ts-rest route, client provider, `packages/contracts`, and all
-   three `@ts-rest/*` dependencies after no consumers remain.
-8. Rename `packages/contracts` to `packages/api` in a separate mechanical
-   change, or keep the package name temporarily if minimizing diff size is
-   more important.
+The tRPC transport lives in `src/shared/api`. Router construction in
+`src/app/router` creates one tRPC client, options proxy, and QueryClient per
+router instance. TanStack Start creates a fresh router for each SSR request, so
+cached session data cannot leak between users. TanStack Router's Query
+integration dehydrates the server cache and restores it in the browser.
 
-## Acceptance criteria
+The authenticated route uses
+`queryClient.ensureQueryData(trpc.session.get.queryOptions())`. It redirects
+only typed `UNAUTHORIZED` errors to sign-in and allows unexpected server or
+network errors to reach the normal error boundary.
 
-- Unauthenticated session access produces a typed `UNAUTHORIZED` tRPC error
-  and redirects to sign-in.
-- Authenticated browser and SSR requests return the same session shape.
-- Better Auth routes and cookies are unchanged.
-- The frontend imports `AppRouter` with `import type`; no backend runtime
-  module enters the browser bundle.
-- Query caches are request-scoped on the server and stable in the browser.
-- No `@ts-rest/*` packages or imports remain after the final phase.
-- Backend integration tests and frontend build/lint checks pass.
+## GET and POST examples
+
+The public `example` router demonstrates both directions of the integration:
+
+| tRPC procedure          | HTTP transport                     | Purpose                                        |
+| ----------------------- | ---------------------------------- | ---------------------------------------------- |
+| `example.getMessage`    | `GET /trpc/example.getMessage`     | Reads a persisted PostgreSQL row by UUID       |
+| `example.createMessage` | `POST /trpc/example.createMessage` | Creates and returns a persisted PostgreSQL row |
+
+The home page consumes them with the recommended TanStack Query-native API:
+
+```typescript
+const trpc = useTRPC()
+
+const message = useQuery(trpc.example.getMessage.queryOptions({ id }))
+
+const createMessage = useMutation(trpc.example.createMessage.mutationOptions())
+createMessage.mutate({ message: 'Hello from React' })
+```
+
+The example is intentionally in the home page slice because it currently has
+one consumer. If the interaction becomes reusable, it can be extracted into a
+feature later.
+
+## Adding procedures
+
+1. Add a domain-oriented slice under `apps/backend/src/modules`.
+2. Keep database access in its repository and business decisions in its service.
+3. Put module-specific errors in `modules/<module>/errors`, extending the
+   appropriate global category error (and therefore `ApplicationError`).
+4. Validate transport input/output in its tRPC router.
+5. Compose the module router into `apps/backend/src/trpc/router.ts`.
+6. Consume generated query or mutation options from `@/shared/api` in the FSD
+   slice that owns the use case.
+7. Add caller tests for success, validation, authorization, and expected error
+   codes.
+
+## Guarantees
+
+- Better Auth routes and cookies remain unchanged.
+- Unauthenticated session access returns a typed `UNAUTHORIZED` tRPC error.
+- Authenticated browser and SSR requests return the same validated shape.
+- Query caches are request-scoped during SSR and stable in the browser.
+- Application errors stay in the backend. Their stable backend `code` is
+  exposed as `applicationCode` by the tRPC formatter, while tRPC keeps ownership
+  of the transport-level `code` field.
+- The previous ts-rest runtime and dependencies have been removed.

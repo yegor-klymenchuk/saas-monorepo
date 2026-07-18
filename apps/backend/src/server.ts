@@ -1,12 +1,13 @@
 import express, { Application } from 'express'
+import * as trpcExpress from '@trpc/server/adapters/express'
 import cors from 'cors'
-import { logger } from './utils/logger'
-import { NodeErrorCode } from './utils/error-codes'
+import { logger } from './lib/logger'
+import { NodeErrorCode } from './lib/error-codes'
 import { toNodeHandler } from 'better-auth/node'
 import { env } from './env'
-import { auth } from './utils/auth'
-import { sessionModule } from './modules/session/session.router'
-import { createExpressEndpoints } from '@ts-rest/express'
+import { auth } from './lib/auth'
+import { createContext } from './trpc/context'
+import { appRouter } from './trpc/router'
 
 export class Server {
   app: Application
@@ -35,9 +36,13 @@ export class Server {
   }
 
   #setupRoutes(): void {
-    ;[sessionModule].forEach(({ contract, router }) => {
-      createExpressEndpoints(contract, router, this.app)
-    })
+    this.app.use(
+      '/trpc',
+      trpcExpress.createExpressMiddleware({
+        router: appRouter,
+        createContext,
+      }),
+    )
   }
 
   start(): void {

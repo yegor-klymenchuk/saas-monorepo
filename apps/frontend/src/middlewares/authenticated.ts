@@ -1,15 +1,19 @@
 import { redirect } from '@tanstack/react-router'
 import { createMiddleware } from '@tanstack/react-start'
-import { getApiClient } from '@/shared/api'
+import { createTrpcClient, isUnauthorizedError } from '@/shared/api'
 
 export const authenticated = createMiddleware().server(async ({ next }) => {
-  const response = await getApiClient().session.get.query()
+  try {
+    const session = await createTrpcClient().session.get.query()
 
-  if (response.status !== 200) {
-    throw redirect({ to: '/sign-in' })
+    return await next({
+      context: { session },
+    })
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      throw redirect({ to: '/sign-in' })
+    }
+
+    throw error
   }
-
-  return await next({
-    context: { session: response.body },
-  })
 })

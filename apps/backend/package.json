@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "description": "Pricing Intelligence Platform - Backend API",
   "main": "dist/main.js",
+  "exports": {
+    "./trpc": {
+      "types": "./src/trpc/index.ts",
+      "default": "./dist/trpc/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "vitest run --passWithNoTests",
+    "test:run": "vitest run --passWithNoTests",
+    "test:integration": "DATABASE_TESTS_ENABLED=true vitest run",
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -21,10 +28,8 @@
   "author": "Yegor",
   "license": "ISC",
   "dependencies": {
-    "@ts-rest/core": "3.53.0-rc.1",
-    "@ts-rest/express": "3.53.0-rc.1",
+    "@trpc/server": "^11.18.0",
     "better-auth": "^1.6.23",
-    "contracts": "workspace:*",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
