@@ -1,6 +1,6 @@
 import { redirect } from '@tanstack/react-router'
 import { createMiddleware } from '@tanstack/react-start'
-import { getApiClient } from '@/integrations/ts-rest'
+import { getApiClient } from '@/shared/api'
 
 export const authenticated = createMiddleware().server(async ({ next }) => {
   const response = await getApiClient().session.get.query()

@@ -2,6 +2,7 @@
   "name": "pricing-intelligence-platform",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "AI-powered SaaS pricing intelligence platform",
   "workspaces": [
     "apps/*",
@@ -16,6 +17,7 @@
     "build:backend": "pnpm --filter backend build",
     "test": "pnpm run --filter \"./apps/*\" test",
     "lint": "pnpm run --filter \"./apps/*\" lint",
+    "lint:architecture": "steiger apps/frontend/src",
     "format": "pnpm run --filter \"./apps/*\" format",
     "clean": "pnpm run --filter \"./apps/*\" clean && rm -rf node_modules",
     "db:generate": "pnpm --filter backend db:generate",
@@ -29,7 +31,8 @@
   },
   "packageManager": "pnpm@9.15.4",
   "devDependencies": {
-    "prettier": "^3.5.3",
-    "typescript": "^5.7.2"
+    "prettier": "^3.9.5",
+    "steiger": "^0.6.0",
+    "typescript": "^5.9.3"
   }
 }

@@ -25,6 +25,8 @@ export const sessionResponseSchema = z.object({
   }),
 })
 
+export type SessionResponse = z.infer<typeof sessionResponseSchema>
+
 export const sessionContract = c.router({
   get: {
     method: 'GET',

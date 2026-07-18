@@ -18,6 +18,7 @@ const config = defineConfig({
     viteReact(),
     nitroV2Plugin({
       preset: 'node-server',
+      compatibilityDate: '2026-07-18',
     }),
   ],
 })

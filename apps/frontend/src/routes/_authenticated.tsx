@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { getApiClient } from '@/integrations/ts-rest'
-import { authenticated } from '@/middlewares/authenticated'
+import { authenticated } from '../middlewares/authenticated'
+import { getApiClient } from '@/shared/api'
 
 export const Route = createFileRoute('/_authenticated')({
   server: {

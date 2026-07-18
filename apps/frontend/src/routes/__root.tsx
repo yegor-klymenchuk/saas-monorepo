@@ -1,13 +1,8 @@
 import * as React from 'react'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from '@/integrations/tanstack-query'
-import { getApiClient } from '@/integrations/ts-rest'
-import { Toaster } from '@/components/ui/sonner'
+import { AppRuntime } from '@/app/runtime'
 
-import appCss from '../styles.css?url'
+import appCss from '@/app/styles/styles.css?url'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,31 +30,13 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const apiClient = getApiClient()
-
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          <apiClient.ReactQueryProvider>
-            {children}
-            <Toaster />
-            <TanStackDevtools
-              config={{
-                position: 'bottom-right',
-              }}
-              plugins={[
-                {
-                  name: 'Tanstack Router',
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          </apiClient.ReactQueryProvider>
-        </QueryClientProvider>
+        <AppRuntime>{children}</AppRuntime>
         <Scripts />
       </body>
     </html>

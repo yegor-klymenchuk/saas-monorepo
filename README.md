@@ -17,6 +17,7 @@ AI-powered SaaS pricing intelligence platform for optimizing pricing strategies.
 ## Tech Stack
 
 ### Backend
+
 - **Runtime**: Node.js 20+
 - **Framework**: Express
 - **Database**: PostgreSQL 16
@@ -25,6 +26,7 @@ AI-powered SaaS pricing intelligence platform for optimizing pricing strategies.
 - **Language**: TypeScript
 
 ### Frontend
+
 - **Framework**: React 19 + TanStack Start
 - **Styling**: Tailwind CSS v4
 - **UI Components**: Shadcn UI
@@ -123,19 +125,19 @@ src/
 
 ```
 src/
-├── routes/              # TanStack Router routes
-├── components/
-│   └── ui/              # Shadcn components
-├── features/            # Feature modules
-├── database/            # Drizzle (Better Auth)
-├── utils/               # Shared utilities
-└── middlewares/         # Route middlewares
+├── app/                 # Providers, router construction, global styles
+├── routes/              # Thin TanStack route adapters and guards
+├── pages/               # Route-level page slices
+├── features/            # Reused user interactions
+└── shared/              # API, auth, config, generic libraries and UI
 ```
 
 ## Documentation
 
 - [Feature Specifications](./docs/features/)
 - [API Conventions](./docs/api/conventions.md)
+- [Frontend Architecture](./docs/architecture/frontend-feature-sliced-design.md)
+- [tRPC Migration Plan](./docs/architecture/trpc-migration.md)
 - [Roadmap](./docs/ROADMAP.md)
 
 ## License
