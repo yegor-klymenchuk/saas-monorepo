@@ -7,6 +7,12 @@
       "skillPath": "feature-sliced-design/SKILL.md",
       "computedHash": "c57a32d524addae35b41b07bbfdd35eea3d85b3d0bd8f4779032eb31b62e5ce9"
     },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "89496d5dd00f4810205f351759594fc2742bf8eea85a2f2b2d1de59f4bd91576"
+    },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",
       "sourceType": "github",
@@ -30,6 +36,12 @@
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "b864a958765563321f485a96f4d59c0bb6539f4286ab6d8b8b66895b7ebd302d"
+    },
+    "stripe-best-practices": {
+      "source": "stripe/ai",
+      "sourceType": "github",
+      "skillPath": "skills/stripe-best-practices/SKILL.md",
+      "computedHash": "4e34f2e8ac99058e7f89326cdab4b86da762eeff1a4c25529c6224b65a4aa1a4"
     }
   }
 }
