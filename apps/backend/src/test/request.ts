@@ -1,6 +1,7 @@
-import supertest from "supertest";
-import { Server } from "../server";
+import supertest from 'supertest'
 
-const server = new Server();
+import { Server } from '../server'
 
-export const request = supertest(server.app);
+const server = new Server()
+
+export const request = supertest(server.app)

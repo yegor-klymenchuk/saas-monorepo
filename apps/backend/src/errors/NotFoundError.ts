@@ -1,4 +1,5 @@
 import type { ApplicationErrorOptions } from './ApplicationError'
+
 import { ApplicationError } from './ApplicationError'
 
 export type NotFoundErrorOptions = ApplicationErrorOptions & {

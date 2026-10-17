@@ -65,3 +65,8 @@ routeTree.gen.ts
 # Misc
 .turbo/
 .next/
+
+# Repository instructions
+!AGENTS.md
+!apps/backend/AGENTS.md
+!apps/frontend/AGENTS.md

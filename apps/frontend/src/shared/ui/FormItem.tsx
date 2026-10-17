@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { useStore } from '@tanstack/react-form'
+import * as React from 'react'
 
 import { Field, FieldDescription, FieldError, FieldLabel } from './Field'
 import { useFieldContext } from './Form'
@@ -19,7 +19,7 @@ type FormItemProps = {
     }
 )
 
-type FormItemChildProps = {
+interface FormItemChildProps {
   id: string
   name: string
   value: unknown
@@ -84,4 +84,4 @@ const FormItem: React.FC<FormItemProps> = (props) => {
   )
 }
 
-export { FormItem, type FormItemProps, type FormItemChildProps }
+export { FormItem, type FormItemChildProps, type FormItemProps }

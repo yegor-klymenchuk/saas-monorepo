@@ -1,9 +1,9 @@
-import { Link } from '@tanstack/react-router'
-import z from 'zod'
 import { useMutation } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { signUp } from '../api/sign-up'
-import { signInWithGoogle } from '../api/sign-in-with-google'
+import z from 'zod'
+
+import { cn } from '@/shared/lib'
 import {
   Button,
   Card,
@@ -16,7 +16,9 @@ import {
   FieldGroup,
   useAppForm,
 } from '@/shared/ui'
-import { cn } from '@/shared/lib'
+
+import { signInWithGoogle as handleSignInWithGoogle } from '../api/sign-in-with-google'
+import { signUp } from '../api/sign-up'
 
 const signUpFormSchema = z.object({
   name: z.string().min(1, { error: 'Name is required' }),
@@ -57,9 +59,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) =
     },
   })
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.handleSubmit()
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    void form.handleSubmit()
   }
 
   return (
@@ -119,7 +121,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) =
                   <form.AppForm>
                     <form.SubmitButton label="Create Account" />
                   </form.AppForm>
-                  <Button variant="outline" type="button" onClick={signInWithGoogle}>
+                  <Button variant="outline" type="button" onClick={handleSignInWithGoogle}>
                     Continue with Google
                   </Button>
                   <FieldDescription className="px-6 text-center">

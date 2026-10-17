@@ -1,6 +1,7 @@
 import { createIsomorphicFn } from '@tanstack/react-start'
-import { env } from '@/shared/config'
+
 import { authClient } from '@/shared/auth'
+import { env } from '@/shared/config'
 
 export const signInWithGoogle = createIsomorphicFn().client(() => {
   return authClient.signIn.social({

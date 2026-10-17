@@ -1,11 +1,16 @@
-export type SeoProps = {
+export interface SeoProps {
   title: string
   description?: string
   image?: string
   keywords?: string
 }
 
-export const seo = ({ title, description, keywords, image }: SeoProps) => {
+export const seo = ({
+  title,
+  description,
+  keywords,
+  image,
+}: SeoProps): Array<{ title: string } | { name: string; content: string | undefined }> => {
   return [
     { title },
     { name: 'description', content: description },

@@ -1,7 +1,8 @@
-import { z } from 'zod'
 import dotenv from 'dotenv'
+import { z } from 'zod'
 
 const nodeEnvironment = process.env.NODE_ENV ?? 'development'
+
 dotenv.config({ path: `.env.${nodeEnvironment}` })
 process.env.NODE_ENV ??= nodeEnvironment
 

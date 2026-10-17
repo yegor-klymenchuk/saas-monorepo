@@ -1,3 +1,3 @@
 export enum NodeErrorCode {
-  EADDRINUSE = "EADDRINUSE",
+  EADDRINUSE = 'EADDRINUSE',
 }

@@ -1,7 +1,7 @@
-import { Server } from './server'
 import { logger } from './lib/logger'
+import { Server } from './server'
 
-async function main() {
+function main() {
   try {
     const server = new Server()
 

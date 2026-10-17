@@ -1,2 +1,2 @@
-export type { SessionResponse } from '../modules/session/session.schema'
+export type { SessionResponse } from '../schemas/session'
 export type { AppRouter } from './router'

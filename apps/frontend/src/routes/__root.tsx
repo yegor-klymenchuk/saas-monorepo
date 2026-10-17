@@ -1,8 +1,9 @@
+import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import * as React from 'react'
-import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
-import type { RouterContext } from '@/router'
-import { App } from '@/app/App'
 
+import type { RouterContext } from '@/router'
+
+import { App } from '@/app/App'
 import appCss from '@/app/styles.css?url'
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -30,7 +31,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   shellComponent: RootDocument,
 })
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { queryClient, trpcClient } = Route.useRouteContext()
 
   return (

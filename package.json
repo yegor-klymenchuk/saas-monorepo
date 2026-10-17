@@ -15,23 +15,32 @@
     "build:frontend": "pnpm --filter frontend build",
     "build:backend": "pnpm --filter backend build",
     "test": "pnpm run --filter \"./apps/*\" test",
-    "lint": "pnpm run --filter \"./apps/*\" lint",
-    "lint:architecture": "steiger apps/frontend/src",
+    "lint": "eslint . --flag v10_config_lookup_from_file",
+    "lint:architecture": "pnpm --filter frontend lint:architecture",
     "format": "pnpm run --filter \"./apps/*\" format",
     "clean": "pnpm run --filter \"./apps/*\" clean && rm -rf node_modules",
     "db:generate": "pnpm --filter backend db:generate",
     "db:migrate": "pnpm --filter backend db:migrate",
     "db:push": "pnpm --filter backend db:push",
-    "db:studio": "pnpm --filter backend db:studio"
+    "db:studio": "pnpm --filter backend db:studio",
+    "test:lint": "node --test eslint/*.test.js",
+    "typecheck": "pnpm -r --if-present typecheck"
   },
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=22.13.0",
     "pnpm": ">=9.0.0"
   },
   "packageManager": "pnpm@9.15.4",
   "devDependencies": {
-    "prettier": "^3.9.5",
-    "steiger": "^0.6.0",
-    "typescript": "^5.9.3"
+    "@eslint/js": "^9.39.5",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-perfectionist": "^5.12.1",
+    "eslint-plugin-prettier": "^5.5.7",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.2"
   }
 }

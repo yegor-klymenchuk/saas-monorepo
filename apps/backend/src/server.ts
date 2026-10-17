@@ -1,11 +1,14 @@
-import express, { Application } from 'express'
+import type { Application } from 'express'
+
 import * as trpcExpress from '@trpc/server/adapters/express'
-import cors from 'cors'
-import { logger } from './lib/logger'
-import { NodeErrorCode } from './lib/error-codes'
 import { toNodeHandler } from 'better-auth/node'
+import cors from 'cors'
+import express from 'express'
+
 import { env } from './env'
 import { auth } from './lib/auth'
+import { NodeErrorCode } from './lib/error-codes'
+import { logger } from './lib/logger'
 import { createContext } from './trpc/context'
 import { appRouter } from './trpc/router'
 

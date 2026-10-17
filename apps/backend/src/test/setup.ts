@@ -1,6 +1,7 @@
-import { afterAll, afterEach, beforeAll } from 'vitest'
+import type { Pool } from 'pg'
+
 import { sql } from 'drizzle-orm'
-import { Pool } from 'pg'
+import { afterAll, afterEach, beforeAll } from 'vitest'
 
 import { db } from '../database/database'
 
@@ -8,14 +9,18 @@ const databaseTestsEnabled = process.env.DATABASE_TESTS_ENABLED === 'true'
 let pool: Pool | undefined
 
 beforeAll(async () => {
-  if (!databaseTestsEnabled) return
+  if (!databaseTestsEnabled) {
+    return
+  }
 
   // Get the pool instance from the database connection
   pool = (db as unknown as { client: Pool }).client
 })
 
 afterEach(async () => {
-  if (!databaseTestsEnabled) return
+  if (!databaseTestsEnabled) {
+    return
+  }
 
   // Clean up all tables after each test
   await db.execute(sql`
@@ -32,7 +37,9 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  if (!pool) return
+  if (!pool) {
+    return
+  }
 
   // Close the database connection pool
   await pool.end()

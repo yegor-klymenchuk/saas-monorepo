@@ -1,10 +1,12 @@
+import type { CreateExpressContextOptions } from '@trpc/server/adapters/express'
+
 import { fromNodeHeaders } from 'better-auth/node'
 
-import type { CreateExpressContextOptions } from '@trpc/server/adapters/express'
-import type { SessionResponse } from '../modules/session/session.schema'
+import type { SessionResponse } from '../schemas/session'
+
 import { auth } from '../lib/auth'
 
-export type APIContext = {
+export interface APIContext {
   session: SessionResponse | null
 }
 

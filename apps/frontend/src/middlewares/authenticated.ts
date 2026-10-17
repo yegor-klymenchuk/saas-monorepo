@@ -1,5 +1,6 @@
 import { redirect } from '@tanstack/react-router'
 import { createMiddleware } from '@tanstack/react-start'
+
 import { createTrpcClient, isUnauthorizedError } from '@/shared/api'
 
 export const authenticated = createMiddleware().server(async ({ next }) => {

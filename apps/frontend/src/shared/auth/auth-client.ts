@@ -1,4 +1,5 @@
 import { createAuthClient } from 'better-auth/react'
+
 import { env } from '@/shared/config'
 
 export const authClient = createAuthClient({

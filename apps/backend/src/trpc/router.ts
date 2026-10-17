@@ -1,10 +1,12 @@
 import { db } from '../database/database'
-import { createExampleModule } from '../modules/example/example.module'
-import { sessionRouter } from '../modules/session/session.router'
+import { DatabaseExampleRepository } from '../repositories/DatabaseExampleRepository'
+import { createExampleRouter } from '../routes/example-router'
+import { sessionRouter } from '../routes/session-router'
+import { ExampleService } from '../services/ExampleService'
 import { router } from './instance'
 
 export const appRouter = router({
-  example: createExampleModule({ database: db }),
+  example: createExampleRouter(new ExampleService(new DatabaseExampleRepository(db))),
   session: sessionRouter,
 })
 

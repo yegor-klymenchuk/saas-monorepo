@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { DashboardPage } from '@/pages/DashboardPage'
+import { DashboardPage } from '@/pages/dashboard'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
   component: DashboardRoute,
 })
 
-function DashboardRoute() {
+function DashboardRoute(): React.JSX.Element {
   const { session } = Route.useRouteContext()
 
   return <DashboardPage currentSession={session} />

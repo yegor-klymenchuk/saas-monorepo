@@ -1,6 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { authenticated } from '../middlewares/authenticated'
+
 import { isUnauthorizedError } from '@/shared/api'
+
+import { authenticated } from '../middlewares/authenticated'
 
 export const Route = createFileRoute('/_authenticated')({
   server: {

@@ -1,6 +1,7 @@
-import { env } from '../env'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
+
+import { env } from '../env'
 import { account } from './schema/account'
 import { exampleMessage } from './schema/example-message'
 import { session } from './schema/session'

@@ -1,9 +1,8 @@
-import { Link } from '@tanstack/react-router'
-import z from 'zod'
-import { toast } from 'sonner'
 import { useMutation } from '@tanstack/react-query'
-import { signIn } from '../api/sign-in'
-import { signInWithGoogle } from '../api/sign-in-with-google'
+import { Link } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import z from 'zod'
+
 import { cn } from '@/shared/lib'
 import {
   Button,
@@ -17,6 +16,9 @@ import {
   FieldGroup,
   useAppForm,
 } from '@/shared/ui'
+
+import { signIn } from '../api/sign-in'
+import { signInWithGoogle as handleSignInWithGoogle } from '../api/sign-in-with-google'
 
 const signInFormSchema = z.object({
   email: z.email({
@@ -53,9 +55,9 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
     },
   })
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.handleSubmit()
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    void form.handleSubmit()
   }
 
   return (
@@ -91,7 +93,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
                   <form.AppForm>
                     <form.SubmitButton label="Login" />
                   </form.AppForm>
-                  <Button variant="outline" type="button" onClick={signInWithGoogle}>
+                  <Button variant="outline" type="button" onClick={handleSignInWithGoogle}>
                     Continue with Google
                   </Button>
                   <FieldDescription className="text-center">
