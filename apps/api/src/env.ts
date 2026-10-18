@@ -33,6 +33,12 @@ const envSchema = z.object({
   // Stripe
   STRIPE_SECRET_KEY: z.string().min(1),
   STRIPE_WEBHOOK_SECRET: z.string().min(1),
+
+  // Mail
+  MAIL_API_URL: z.url({ protocol: /^https?$/ }),
+  MAIL_API_KEY: z.string().trim().startsWith('sk_').min(4),
+  MAIL_FROM_EMAIL: z.email(),
+  MAIL_FROM_NAME: z.string().trim().min(1).optional(),
 })
 
 export const env = envSchema.parse(process.env)
