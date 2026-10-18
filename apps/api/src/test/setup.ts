@@ -4,6 +4,7 @@ import { afterAll, afterEach } from 'vitest'
 import { db } from '../database/database'
 import { env } from '../env'
 import './mocks/mail/setup'
+import './mocks/sentry/setup'
 import './mocks/stripe/setup'
 
 if (env.NODE_ENV !== 'test' || !env.DATABASE_NAME.endsWith('_test')) {

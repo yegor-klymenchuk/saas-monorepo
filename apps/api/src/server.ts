@@ -1,5 +1,6 @@
 import type { Application } from 'express'
 
+import * as Sentry from '@sentry/node'
 import * as trpcExpress from '@trpc/server/adapters/express'
 import { toNodeHandler } from 'better-auth/node'
 import cors from 'cors'
@@ -44,6 +45,14 @@ export class Server {
       trpcExpress.createExpressMiddleware({
         router: appRouter,
         createContext,
+        onError: ({ error, path }) => {
+          if (error.code === 'INTERNAL_SERVER_ERROR') {
+            Sentry.withScope((scope) => {
+              scope.setTag('trpc.path', path ?? 'unknown')
+              Sentry.captureException(error.cause ?? error)
+            })
+          }
+        },
       }),
     )
   }

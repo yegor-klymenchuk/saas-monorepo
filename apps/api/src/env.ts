@@ -7,7 +7,7 @@ dotenv.config({ path: `.env.${nodeEnvironment}`, override: nodeEnvironment === '
 process.env.NODE_ENV ??= nodeEnvironment
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['test', 'development']),
+  NODE_ENV: z.enum(['test', 'development', 'production']),
 
   // Server
   SERVER_HOST: z.url(),
@@ -39,6 +39,9 @@ const envSchema = z.object({
   MAIL_API_KEY: z.string().trim().startsWith('sk_').min(4),
   MAIL_FROM_EMAIL: z.email(),
   MAIL_FROM_NAME: z.string().trim().min(1).optional(),
+
+  // Sentry
+  SENTRY_DSN: z.union([z.url(), z.literal('')]).optional(),
 })
 
 export const env = envSchema.parse(process.env)

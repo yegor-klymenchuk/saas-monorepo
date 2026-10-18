@@ -31,7 +31,25 @@ function createWebConfig() {
          */
         'import-fsd/no-unknown-layers': [
           'error',
-          { ignores: ['routes', 'router', 'middlewares', 'main', 'index', 'vite-env.d', 'routeTree', 'routeTree.gen'] },
+          {
+            ignores: [
+              'routes',
+              'router',
+              'middlewares',
+              'main',
+              'index',
+              'client',
+              'server',
+              'start',
+              'instrument',
+              'instrument.client',
+              'instrument.server.test',
+              'test',
+              'vite-env.d',
+              'routeTree',
+              'routeTree.gen',
+            ],
+          },
         ],
       },
     },

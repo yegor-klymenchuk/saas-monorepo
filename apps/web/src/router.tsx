@@ -1,6 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type { i18n } from 'i18next'
 
+import * as Sentry from '@sentry/tanstackstart-react'
 import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 
@@ -34,7 +35,14 @@ export const getRouter = async () => {
     },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
+    defaultOnCatch: (error) => {
+      Sentry.captureException(error)
+    },
   })
+
+  if (!router.isServer) {
+    Sentry.addIntegration(Sentry.tanstackRouterBrowserTracingIntegration(router))
+  }
 
   setupRouterSsrQueryIntegration({
     router,

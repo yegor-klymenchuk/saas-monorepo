@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { billingConfig } from '../config/billing'
 import { env } from '../env'
 import { signUp } from '../test/helpers/auth'
+import { sentryMocks } from '../test/mocks/sentry/setup'
 import { stripeFixtures } from '../test/mocks/stripe/fixtures'
 import { stripeMocks } from '../test/mocks/stripe/setup'
 import { request } from '../test/request'
@@ -23,6 +24,7 @@ describe('Billing Routes - HTTP Contracts', () => {
       })
       expect(stripeMocks.listPrices).not.toHaveBeenCalled()
       expect(stripeMocks.createCheckout).not.toHaveBeenCalled()
+      expect(sentryMocks.captureException).not.toHaveBeenCalled()
     })
 
     it('returns 401 UNAUTHORIZED for subscription checkout without a session', async () => {
@@ -162,12 +164,15 @@ describe('Billing Routes - HTTP Contracts', () => {
         httpStatus: 400,
         applicationCode: 'BILLING_PRODUCT_NOT_ALLOWED',
       })
+      expect(sentryMocks.captureException).not.toHaveBeenCalled()
     })
 
     it('maps a provider failure to 500 INTERNAL_SERVER_ERROR', async () => {
       const account = await signUp()
 
-      stripeMocks.listPrices.mockRejectedValue(new Error('Provider temporarily unavailable'))
+      const error = new Error('Provider temporarily unavailable')
+
+      stripeMocks.listPrices.mockRejectedValue(error)
 
       const response = await request
         .post('/trpc/billing.createPaymentCheckout')
@@ -180,6 +185,7 @@ describe('Billing Routes - HTTP Contracts', () => {
         httpStatus: 500,
         applicationCode: null,
       })
+      expect(sentryMocks.captureException).toHaveBeenCalledExactlyOnceWith(error)
     })
 
     it('returns 500 when the service result violates the response schema', async () => {
