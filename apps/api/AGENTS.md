@@ -1,6 +1,6 @@
-# Backend
+# API
 
-The backend runs Express with tRPC at `/trpc` and Better Auth at `/api/auth/*`. PostgreSQL persistence uses Drizzle. Keep the architecture flat and group files by responsibility, without a `modules/` layer.
+The API runs Express with tRPC at `/trpc` and Better Auth at `/api/auth/*`. PostgreSQL persistence uses Drizzle. Keep the architecture flat and group files by responsibility, without a `modules/` layer.
 
 ## Source layout and dependencies
 
@@ -38,10 +38,10 @@ Use PascalCase filenames matching the class in services and repositories, such a
 
 Run from the repository root:
 
-- `pnpm --filter backend dev`: start the API with reload
-- `pnpm --filter backend build` / `pnpm --filter backend typecheck`
-- `pnpm --filter backend lint`
-- `pnpm --filter backend test`: run all tests against the dedicated database configured in `.env.test`, with database cleanup between tests
+- `pnpm --filter api dev`: start the API with reload
+- `pnpm --filter api build` / `pnpm --filter api typecheck`
+- `pnpm --filter api lint`
+- `pnpm --filter api test`: run all tests against the dedicated database configured in `.env.test`, with database cleanup between tests
 - `pnpm db:generate` / `pnpm db:migrate`: manage migrations
 
-The backend loads `.env.<NODE_ENV>`, defaulting to `.env.development`. Integration test cleanup truncates public tables, so never point it at a development or production database. Preserve the type inference of router factories so `AppRouter` retains precise procedure contracts.
+The API loads `.env.<NODE_ENV>`, defaulting to `.env.development`. Integration test cleanup truncates public tables, so never point it at a development or production database. Preserve the type inference of router factories so `AppRouter` retains precise procedure contracts.

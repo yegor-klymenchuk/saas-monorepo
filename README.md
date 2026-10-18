@@ -7,15 +7,15 @@ AI-powered SaaS pricing intelligence platform for optimizing pricing strategies.
 ```
 .
 ├── apps/
-│   ├── backend/          # Express API server and tRPC application router
-│   └── frontend/         # React + TanStack Start
+│   ├── api/              # Express API server and tRPC application router
+│   └── web/              # React + TanStack Start
 ├── docs/                 # Feature specs & documentation
 └── docker-compose.yml    # PostgreSQL + Redis
 ```
 
 ## Tech Stack
 
-### Backend
+### API
 
 - **Runtime**: Node.js 20+
 - **Framework**: Express
@@ -24,7 +24,7 @@ AI-powered SaaS pricing intelligence platform for optimizing pricing strategies.
 - **Queue**: BullMQ + Redis
 - **Language**: TypeScript
 
-### Frontend
+### Web
 
 - **Framework**: React 19 + TanStack Start
 - **Styling**: Tailwind CSS v4
@@ -56,8 +56,8 @@ pnpm db:migrate
 pnpm dev
 
 # Or start individually
-pnpm dev:backend   # http://localhost:4000
-pnpm dev:frontend  # http://localhost:3000
+pnpm dev:api   # http://localhost:4000
+pnpm dev:web  # http://localhost:3000
 ```
 
 ### Environment Setup
@@ -65,11 +65,11 @@ pnpm dev:frontend  # http://localhost:3000
 Copy `.env.example` files in each app and configure:
 
 ```bash
-# Backend
-cp apps/backend/.env.example apps/backend/.env.development
+# API
+cp apps/api/.env.example apps/api/.env.development
 
-# Frontend
-cp apps/frontend/.env.example apps/frontend/.env
+# Web
+cp apps/web/.env.example apps/web/.env
 ```
 
 ## Development
@@ -79,13 +79,13 @@ cp apps/frontend/.env.example apps/frontend/.env
 ```bash
 # Development
 pnpm dev                 # Start all apps
-pnpm dev:backend         # Start backend only
-pnpm dev:frontend        # Start frontend only
+pnpm dev:api         # Start API only
+pnpm dev:web        # Start web only
 
 # Build
 pnpm build               # Build all apps
-pnpm build:backend       # Build backend only
-pnpm build:frontend      # Build frontend only
+pnpm build:api       # Build API only
+pnpm build:web      # Build web only
 
 # Testing
 pnpm test                # Run all tests
@@ -103,7 +103,7 @@ pnpm format              # Format all apps
 
 ## Project Structure
 
-### Backend (`apps/backend`)
+### API (`apps/api`)
 
 ```
 src/
@@ -121,7 +121,7 @@ src/
 └── main.ts              # Entry point
 ```
 
-### Frontend (`apps/frontend`)
+### Web (`apps/web`)
 
 ```
 src/
@@ -136,7 +136,7 @@ src/
 
 - [Feature Specifications](./docs/features/)
 - [API Conventions](./docs/api/conventions.md)
-- [Frontend Architecture](./docs/architecture/frontend-feature-sliced-design.md)
+- [Web Architecture](./docs/architecture/frontend-feature-sliced-design.md)
 - [tRPC Migration Plan](./docs/architecture/trpc-migration.md)
 - [Roadmap](./docs/ROADMAP.md)
 

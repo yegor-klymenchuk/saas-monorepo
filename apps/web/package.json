@@ -1,8 +1,8 @@
 {
-  "name": "frontend",
+  "name": "web",
   "private": true,
   "type": "module",
-  "description": "Pricing Intelligence Platform - Frontend",
+  "description": "Pricing Intelligence Platform - Web",
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
@@ -61,7 +61,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "backend": "workspace:*",
+    "api": "workspace:*",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-plugin-import-fsd": "3.0.4",

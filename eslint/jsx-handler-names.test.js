@@ -1,6 +1,6 @@
 import { RuleTester } from 'eslint'
 
-import { jsxHandlerNames } from '../apps/frontend/eslint-rules/jsx-handler-names.js'
+import { jsxHandlerNames } from '../apps/web/eslint-rules/jsx-handler-names.js'
 
 const tester = new RuleTester({ languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } })
 

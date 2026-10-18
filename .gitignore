@@ -55,8 +55,8 @@ Thumbs.db
 
 # Drizzle
 drizzle/
-!apps/backend/drizzle/
-!apps/backend/drizzle/**
+!apps/api/drizzle/
+!apps/api/drizzle/**
 
 # TanStack
 .tanstack/
@@ -68,5 +68,5 @@ routeTree.gen.ts
 
 # Repository instructions
 !AGENTS.md
-!apps/backend/AGENTS.md
-!apps/frontend/AGENTS.md
+!apps/api/AGENTS.md
+!apps/web/AGENTS.md

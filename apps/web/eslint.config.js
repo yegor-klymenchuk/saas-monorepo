@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import baseConfig from '../../eslint.config.js'
 import { jsxHandlerNames } from './eslint-rules/jsx-handler-names.js'
 
-function createFrontendConfig() {
+function createWebConfig() {
   const files = ['src/**/*.{ts,tsx}']
 
   return [
@@ -53,9 +53,9 @@ function createFrontendConfig() {
           {
             patterns: [
               {
-                group: ['backend', 'backend/*'],
+                regex: '^api(?:/|$)',
                 allowTypeImports: true,
-                message: 'Frontend code may only use type-only imports from the backend public API.',
+                message: 'Web code may only use type-only imports from the API package.',
               },
             ],
           },
@@ -85,4 +85,4 @@ function createFrontendConfig() {
   ]
 }
 
-export default [...baseConfig, ...createFrontendConfig()]
+export default [...baseConfig, ...createWebConfig()]

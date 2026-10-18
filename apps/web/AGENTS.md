@@ -1,6 +1,6 @@
-# Frontend
+# Web
 
-React and TanStack Start provide routing and SSR, TanStack Query and tRPC provide API access, and Better Auth handles authentication. UI components use Tailwind CSS and Base UI. The backend owns database access and business persistence.
+React and TanStack Start provide routing and SSR, TanStack Query and tRPC provide API access, and Better Auth handles authentication. UI components use Tailwind CSS and Base UI. The API owns database access and business persistence.
 
 ## Architecture
 
@@ -27,11 +27,11 @@ Name local JSX callbacks `handleSomething` and callback props `onSomething`. For
 
 Run from the repository root:
 
-- `pnpm --filter frontend dev`: start on port 3000
-- `pnpm --filter frontend build`: build client and Nitro server
-- `pnpm --filter frontend start`: run the built server
-- `pnpm --filter frontend typecheck`
-- `pnpm --filter frontend lint`: ESLint and FSD checks
-- `pnpm --filter frontend test`: run frontend tests, currently no application test suite
+- `pnpm --filter web dev`: start on port 3000
+- `pnpm --filter web build`: build client and Nitro server
+- `pnpm --filter web start`: run the built server
+- `pnpm --filter web typecheck`
+- `pnpm --filter web lint`: ESLint and FSD checks
+- `pnpm --filter web test`: run web tests, currently no application test suite
 
-Use `.env` based on `.env.example`. Only public configuration belongs in `VITE_*` variables. Import backend contracts only as types through `backend/trpc`. Keep inferred router and tRPC factory types intact.
+Use `.env` based on `.env.example`. Only public configuration belongs in `VITE_*` variables. Import API contracts only as types through `api/trpc`. Keep inferred router and tRPC factory types intact.

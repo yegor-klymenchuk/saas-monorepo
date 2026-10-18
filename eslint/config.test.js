@@ -6,43 +6,53 @@ import { fileURLToPath } from 'node:url'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const eslint = new ESLint({ cwd: root, flags: ['v10_config_lookup_from_file'] })
 
-test('shared rules apply to backend and frontend while React rules stay in frontend', async () => {
-  const [backend, frontend, shared] = await Promise.all([
-    eslint.calculateConfigForFile(`${root}/apps/backend/src/routes/session.ts`),
-    eslint.calculateConfigForFile(`${root}/apps/frontend/src/pages/home/ui/HomePage.tsx`),
+test('shared rules apply to api and web while React rules stay in web', async () => {
+  const [api, web, shared] = await Promise.all([
+    eslint.calculateConfigForFile(`${root}/apps/api/src/routes/session.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/web/src/pages/home/ui/HomePage.tsx`),
     eslint.calculateConfigForFile(`${root}/packages/example/src/index.ts`),
   ])
 
-  for (const config of [backend, frontend, shared]) {
+  for (const config of [api, web, shared]) {
     assert.equal(config.rules['perfectionist/sort-imports'][0], 2)
     assert.equal(config.rules['@typescript-eslint/no-floating-promises'][0], 2)
   }
 
-  assert.equal(frontend.rules['local/jsx-handler-names'][0], 2)
-  assert.equal(frontend.rules['react-hooks/rules-of-hooks'][0], 2)
-  assert.equal(backend.rules['local/jsx-handler-names'], undefined)
+  assert.equal(web.rules['local/jsx-handler-names'][0], 2)
+  assert.equal(web.rules['react-hooks/rules-of-hooks'][0], 2)
+  assert.equal(api.rules['local/jsx-handler-names'], undefined)
   assert.equal(shared.rules['react-hooks/rules-of-hooks'], undefined)
 })
 
-test('frontend rejects backend runtime imports but allows public type imports', async () => {
-  const results = await eslint.lintText("import { appRouter } from 'backend/trpc'\nexport { appRouter }\n", {
-    filePath: `${root}/apps/frontend/src/shared/api/index.ts`,
+test('web rejects api package runtime imports but allows public type imports and local API modules', async () => {
+  const results = await eslint.lintText("import { appRouter } from 'api/trpc'\nexport { appRouter }\n", {
+    filePath: `${root}/apps/web/src/shared/api/index.ts`,
   })
 
   assert.ok(results[0].messages.some((message) => message.ruleId === 'no-restricted-imports'))
 
-  const typeResults = await eslint.lintText(
-    "import type { AppRouter } from 'backend/trpc'\nexport type { AppRouter }\n",
-    {
-      filePath: `${root}/apps/frontend/src/shared/api/index.ts`,
-    },
-  )
+  const typeResults = await eslint.lintText("import type { AppRouter } from 'api/trpc'\nexport type { AppRouter }\n", {
+    filePath: `${root}/apps/web/src/shared/api/index.ts`,
+  })
 
   assert.ok(!typeResults[0].messages.some((message) => message.ruleId === 'no-restricted-imports'))
+
+  const [sharedResults, relativeResults] = await Promise.all([
+    eslint.lintText("import { useTRPC } from '@/shared/api'\nexport { useTRPC }\n", {
+      filePath: `${root}/apps/web/src/app/App.tsx`,
+    }),
+    eslint.lintText("import { signIn } from '../api/sign-in'\nexport { signIn }\n", {
+      filePath: `${root}/apps/web/src/features/authentication/ui/SignInForm.tsx`,
+    }),
+  ])
+
+  for (const results of [sharedResults, relativeResults]) {
+    assert.ok(!results[0].messages.some((message) => message.fatal || message.ruleId === 'no-restricted-imports'))
+  }
 })
 
 test('generated router code is ignored', async () => {
-  assert.equal(await eslint.isPathIgnored(`${root}/apps/frontend/src/routeTree.gen.ts`), true)
+  assert.equal(await eslint.isPathIgnored(`${root}/apps/web/src/routeTree.gen.ts`), true)
 })
 
 test('expressions are separated from declarations while consecutive calls and declarations can stay together', async () => {
@@ -77,19 +87,19 @@ test('expressions are separated from declarations while consecutive calls and de
 })
 
 test('FSD rules reject upward, cross-slice, and unknown-layer imports from either working directory', async () => {
-  const frontendRoot = `${root}/apps/frontend`
-  const frontendEslint = new ESLint({ cwd: frontendRoot })
+  const webRoot = `${root}/apps/web`
+  const webEslint = new ESLint({ cwd: webRoot })
   const code = "import { HomePage } from '@/pages/home'\nimport { unknown } from '@/unknown-layer/example'\n"
-  const options = { filePath: `${frontendRoot}/src/shared/api/index.ts` }
-  const [rootResults, frontendResults, crossSliceResults] = await Promise.all([
+  const options = { filePath: `${webRoot}/src/shared/api/index.ts` }
+  const [rootResults, webResults, crossSliceResults] = await Promise.all([
     eslint.lintText(code, options),
-    frontendEslint.lintText(code, options),
+    webEslint.lintText(code, options),
     eslint.lintText("import { SignInPage } from '@/pages/sign-in'\n", {
-      filePath: `${frontendRoot}/src/pages/home/index.ts`,
+      filePath: `${webRoot}/src/pages/home/index.ts`,
     }),
   ])
 
-  for (const results of [rootResults, frontendResults]) {
+  for (const results of [rootResults, webResults]) {
     assert.ok(!results[0].messages.some((message) => message.fatal))
     assert.ok(results[0].messages.some((message) => message.ruleId === 'import-fsd/no-denied-layers'))
     assert.ok(results[0].messages.some((message) => message.ruleId === 'import-fsd/no-unknown-layers'))
@@ -100,10 +110,10 @@ test('FSD rules reject upward, cross-slice, and unknown-layer imports from eithe
 
 test('FSD rules allow framework entry points and imports from lower layers', async () => {
   const results = await eslint.lintFiles([
-    `${root}/apps/frontend/src/router.tsx`,
-    `${root}/apps/frontend/src/routes/**/*.tsx`,
-    `${root}/apps/frontend/src/middlewares/*.ts`,
-    `${root}/apps/frontend/src/pages/home/ui/HomePage.tsx`,
+    `${root}/apps/web/src/router.tsx`,
+    `${root}/apps/web/src/routes/**/*.tsx`,
+    `${root}/apps/web/src/middlewares/*.ts`,
+    `${root}/apps/web/src/pages/home/ui/HomePage.tsx`,
   ])
 
   assert.ok(results.length > 3)
@@ -113,21 +123,21 @@ test('FSD rules allow framework entry points and imports from lower layers', asy
     ),
   )
 
-  const backend = await eslint.calculateConfigForFile(`${root}/apps/backend/src/routes/session.ts`)
+  const api = await eslint.calculateConfigForFile(`${root}/apps/api/src/routes/session.ts`)
 
-  assert.equal(backend.rules['import-fsd/no-denied-layers'], undefined)
+  assert.equal(api.rules['import-fsd/no-denied-layers'], undefined)
 })
 
 test('query and mutation factories retain inference without weakening other module boundaries', async () => {
-  const [queries, mutations, helper, backend] = await Promise.all([
-    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/api/billing.queries.ts`),
-    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/api/billing.mutations.ts`),
-    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/lib/cn.ts`),
-    eslint.calculateConfigForFile(`${root}/apps/backend/src/services/billing.queries.ts`),
+  const [queries, mutations, helper, api] = await Promise.all([
+    eslint.calculateConfigForFile(`${root}/apps/web/src/shared/api/billing.queries.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/web/src/shared/api/billing.mutations.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/web/src/shared/lib/cn.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/api/src/services/billing.queries.ts`),
   ])
 
   assert.equal(queries.rules['@typescript-eslint/explicit-module-boundary-types'][0], 0)
   assert.equal(mutations.rules['@typescript-eslint/explicit-module-boundary-types'][0], 0)
   assert.equal(helper.rules['@typescript-eslint/explicit-module-boundary-types'][0], 2)
-  assert.equal(backend.rules['@typescript-eslint/explicit-module-boundary-types'][0], 2)
+  assert.equal(api.rules['@typescript-eslint/explicit-module-boundary-types'][0], 2)
 })
