@@ -1,11 +1,7 @@
-import { ApiExample } from './ApiExample'
-
 export function HomePage(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-8">
       <div className="max-w-4xl w-full space-y-8">
-        <ApiExample />
-
         {/* Features Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Authentication Links */}

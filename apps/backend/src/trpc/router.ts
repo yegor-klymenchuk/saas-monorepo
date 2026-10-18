@@ -1,9 +1,9 @@
-import { createExampleRouter } from '../routes/example-router'
-import { sessionRouter } from '../routes/session-router'
+import { billingRouter } from '../routes/billing'
+import { sessionRouter } from '../routes/session'
 import { router } from './instance'
 
 export const appRouter = router({
-  example: createExampleRouter(),
+  billing: billingRouter,
   session: sessionRouter,
 })
 

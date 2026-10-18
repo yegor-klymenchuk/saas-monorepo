@@ -8,7 +8,7 @@ const eslint = new ESLint({ cwd: root, flags: ['v10_config_lookup_from_file'] })
 
 test('shared rules apply to backend and frontend while React rules stay in frontend', async () => {
   const [backend, frontend, shared] = await Promise.all([
-    eslint.calculateConfigForFile(`${root}/apps/backend/src/routes/example-router.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/backend/src/routes/session.ts`),
     eslint.calculateConfigForFile(`${root}/apps/frontend/src/pages/home/ui/HomePage.tsx`),
     eslint.calculateConfigForFile(`${root}/packages/example/src/index.ts`),
   ])
@@ -43,6 +43,37 @@ test('frontend rejects backend runtime imports but allows public type imports', 
 
 test('generated router code is ignored', async () => {
   assert.equal(await eslint.isPathIgnored(`${root}/apps/frontend/src/routeTree.gen.ts`), true)
+})
+
+test('expressions are separated from declarations while consecutive calls and declarations can stay together', async () => {
+  const filePath = `${root}/eslint/padding-example.js`
+  const invalid = await eslint.lintText(
+    'async function run(fixtures, Repository) {\n  await fixtures.user()\n  const repository = new Repository()\n\n  repository.save()\n  let result = repository.find()\n\n  return result\n}\n',
+    { filePath },
+  )
+
+  assert.ok(!invalid[0].messages.some((message) => message.fatal))
+  assert.equal(
+    invalid[0].messages.filter((message) => message.ruleId === '@stylistic/padding-line-between-statements').length,
+    2,
+  )
+
+  const valid = await eslint.lintText(
+    'async function run(fixtures, Repository) {\n  await fixtures.user()\n  await fixtures.account()\n\n  const repository = new Repository()\n  const result = repository.find()\n\n  return result\n}\n',
+    { filePath },
+  )
+
+  assert.ok(!valid[0].messages.some((message) => message.fatal))
+  assert.ok(!valid[0].messages.some((message) => message.ruleId === '@stylistic/padding-line-between-statements'))
+
+  const fixingEslint = new ESLint({ cwd: root, flags: ['v10_config_lookup_from_file'], fix: true })
+  const fixed = await fixingEslint.lintText(
+    'async function run(fixtures, Repository) {\n  await fixtures.user()\n  const repository = new Repository()\n\n  return repository\n}\n',
+    { filePath },
+  )
+
+  assert.ok(fixed[0].output.includes('await fixtures.user()\n\n  const repository'))
+  assert.ok(!fixed[0].messages.some((message) => message.ruleId === '@stylistic/padding-line-between-statements'))
 })
 
 test('FSD rules reject upward, cross-slice, and unknown-layer imports from either working directory', async () => {
@@ -82,17 +113,17 @@ test('FSD rules allow framework entry points and imports from lower layers', asy
     ),
   )
 
-  const backend = await eslint.calculateConfigForFile(`${root}/apps/backend/src/routes/example-router.ts`)
+  const backend = await eslint.calculateConfigForFile(`${root}/apps/backend/src/routes/session.ts`)
 
   assert.equal(backend.rules['import-fsd/no-denied-layers'], undefined)
 })
 
 test('query and mutation factories retain inference without weakening other module boundaries', async () => {
   const [queries, mutations, helper, backend] = await Promise.all([
-    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/api/example.queries.ts`),
-    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/api/example.mutations.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/api/billing.queries.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/api/billing.mutations.ts`),
     eslint.calculateConfigForFile(`${root}/apps/frontend/src/shared/lib/cn.ts`),
-    eslint.calculateConfigForFile(`${root}/apps/backend/src/services/example.queries.ts`),
+    eslint.calculateConfigForFile(`${root}/apps/backend/src/services/billing.queries.ts`),
   ])
 
   assert.equal(queries.rules['@typescript-eslint/explicit-module-boundary-types'][0], 0)

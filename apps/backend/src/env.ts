@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 const nodeEnvironment = process.env.NODE_ENV ?? 'development'
 
-dotenv.config({ path: `.env.${nodeEnvironment}` })
+dotenv.config({ path: `.env.${nodeEnvironment}`, override: nodeEnvironment === 'test' })
 process.env.NODE_ENV ??= nodeEnvironment
 
 const envSchema = z.object({
@@ -29,6 +29,10 @@ const envSchema = z.object({
   DATABASE_USERNAME: z.string(),
   DATABASE_PASSWORD: z.string(),
   DATABASE_NAME: z.string(),
+
+  // Stripe
+  STRIPE_SECRET_KEY: z.string().min(1),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1),
 })
 
 export const env = envSchema.parse(process.env)

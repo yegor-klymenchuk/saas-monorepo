@@ -107,18 +107,17 @@ pnpm format              # Format all apps
 
 ```
 src/
-├── database/
-│   └── schema/          # Drizzle schemas
-├── errors/              # ApplicationError and global category errors
-├── modules/             # Domain-oriented backend slices
-│   └── example/
-│       ├── example.repository.ts # Database access
-│       ├── example.service.ts    # Application behavior
-│       ├── example.router.ts     # tRPC transport boundary
-│       └── errors/               # Module-specific application errors
-├── middlewares/         # Express middlewares
-├── trpc/                # Context, errors, middlewares, procedures and router
-├── utils/               # Shared utilities
+├── config/              # Typed billing catalog and checkout configuration
+├── database/            # Database client and Drizzle schemas
+├── errors/              # Application errors and stable codes
+├── lib/                 # Authentication, Stripe client, and logging
+├── repositories/        # Database access
+├── routes/              # Billing and session tRPC procedures
+├── schemas/             # Request and response validation
+├── services/            # Billing behavior
+├── test/                # Shared setup, fixtures, and provider mocks
+├── trpc/                # Context, middleware, procedures, and root router
+├── server.ts            # Express configuration
 └── main.ts              # Entry point
 ```
 

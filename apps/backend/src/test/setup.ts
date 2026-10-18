@@ -1,27 +1,15 @@
-import type { Pool } from 'pg'
-
 import { sql } from 'drizzle-orm'
-import { afterAll, afterEach, beforeAll } from 'vitest'
+import { afterAll, afterEach } from 'vitest'
 
 import { db } from '../database/database'
+import { env } from '../env'
+import './mocks/stripe/setup'
 
-const databaseTestsEnabled = process.env.DATABASE_TESTS_ENABLED === 'true'
-let pool: Pool | undefined
-
-beforeAll(async () => {
-  if (!databaseTestsEnabled) {
-    return
-  }
-
-  // Get the pool instance from the database connection
-  pool = (db as unknown as { client: Pool }).client
-})
+if (env.NODE_ENV !== 'test' || !env.DATABASE_NAME.endsWith('_test')) {
+  throw new Error('Database tests require NODE_ENV=test and a database name ending in _test')
+}
 
 afterEach(async () => {
-  if (!databaseTestsEnabled) {
-    return
-  }
-
   // Clean up all tables after each test
   await db.execute(sql`
     DO $$
@@ -37,10 +25,6 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  if (!pool) {
-    return
-  }
-
   // Close the database connection pool
-  await pool.end()
+  await db.$client.end()
 })

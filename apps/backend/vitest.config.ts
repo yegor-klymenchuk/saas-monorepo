@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    fileParallelism: false,
     env: {
       ...dotenv.config({ path: '.env.test' }).parsed,
     },

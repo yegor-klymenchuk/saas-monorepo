@@ -3,8 +3,10 @@ import { Pool } from 'pg'
 
 import { env } from '../env'
 import { account } from './schema/account'
-import { exampleMessage } from './schema/example-message'
+import { purchase } from './schema/purchase'
 import { session } from './schema/session'
+import { stripeWebhook } from './schema/stripe-webhook'
+import { subscription } from './schema/subscription'
 import { user } from './schema/user'
 import { verification } from './schema/verification'
 
@@ -20,8 +22,10 @@ export const db = drizzle({
   client: pool,
   schema: {
     account,
-    exampleMessage,
+    purchase,
     session,
+    stripeWebhook,
+    subscription,
     user,
     verification,
   },
