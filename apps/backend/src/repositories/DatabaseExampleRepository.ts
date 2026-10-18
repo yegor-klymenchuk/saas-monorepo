@@ -1,7 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import type { db as applicationDatabase } from '../database/database'
-
+import { db as applicationDatabase } from '../database/database'
 import { exampleMessage } from '../database/schema/example-message'
 
 export type ExampleMessageRecord = typeof exampleMessage.$inferSelect
@@ -15,7 +14,7 @@ export interface ExampleRepository {
 export class DatabaseExampleRepository implements ExampleRepository {
   #database: typeof applicationDatabase
 
-  constructor(database: typeof applicationDatabase) {
+  constructor(database: typeof applicationDatabase = applicationDatabase) {
     this.#database = database
   }
 

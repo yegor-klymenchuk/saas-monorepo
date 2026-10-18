@@ -8,6 +8,15 @@ import { fileURLToPath } from 'node:url'
 import tseslint from 'typescript-eslint'
 
 const alphabetical = { type: 'alphabetical', order: 'asc' }
+const functionDeclaration = {
+  selector: [
+    'FunctionDeclaration',
+    'VariableDeclaration[declarations.0.init.type=/^(ArrowFunctionExpression|FunctionExpression)$/]',
+    'ExportNamedDeclaration[declaration.type="FunctionDeclaration"]',
+    'ExportDefaultDeclaration[declaration.type=/^(FunctionDeclaration|FunctionExpression|ArrowFunctionExpression)$/]',
+    'ExportNamedDeclaration[declaration.declarations.0.init.type=/^(ArrowFunctionExpression|FunctionExpression)$/]',
+  ].join(', '),
+}
 
 export default [
   {
@@ -46,6 +55,15 @@ export default [
       'id-length': ['error', { min: 2, exceptions: ['_', 'z'], properties: 'never' }],
       '@stylistic/multiline-comment-style': ['error', 'starred-block'],
       '@stylistic/padded-blocks': ['error', 'never'],
+      '@stylistic/lines-between-class-members': [
+        'error',
+        {
+          enforce: [
+            { blankLine: 'always', prev: 'method', next: '*' },
+            { blankLine: 'always', prev: '*', next: 'method' },
+          ],
+        },
+      ],
       '@stylistic/spaced-comment': ['error', 'always'],
       '@stylistic/lines-around-comment': [
         'error',
@@ -59,11 +77,14 @@ export default [
       ],
       '@stylistic/padding-line-between-statements': [
         'error',
+        { blankLine: 'always', prev: 'import', next: '*' },
+        { blankLine: 'any', prev: 'import', next: 'import' },
         { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
         { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
         { blankLine: 'always', prev: ['case', 'default'], next: '*' },
         { blankLine: 'any', prev: 'case', next: 'case' },
         { blankLine: 'always', prev: 'if', next: '*' },
+        { blankLine: 'always', prev: functionDeclaration, next: functionDeclaration },
       ],
     },
   },

@@ -1,12 +1,11 @@
-import type { ExampleService } from '../services/ExampleService'
-
 import { createExampleMessageInputSchema, exampleMessageSchema, getExampleMessageInputSchema } from '../schemas/example'
+import { ExampleService } from '../services/ExampleService'
 import { router } from '../trpc/instance'
 import { publicProcedure } from '../trpc/procedures'
 
 type ExampleServiceApi = Pick<ExampleService, 'createMessage' | 'getMessage'>
 
-export function createExampleRouter(service: ExampleServiceApi) {
+export function createExampleRouter(service: ExampleServiceApi = new ExampleService()) {
   return router({
     getMessage: publicProcedure
       .input(getExampleMessageInputSchema)

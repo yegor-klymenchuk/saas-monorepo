@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import type { ExampleRepository } from '../repositories/DatabaseExampleRepository'
 
 import { ExampleMessageNotFoundError } from '../errors/ExampleMessageNotFoundError'
+import { DatabaseExampleRepository } from '../repositories/DatabaseExampleRepository'
 
 export interface ExampleMessage {
   id: string
@@ -13,7 +14,7 @@ export interface ExampleMessage {
 export class ExampleService {
   #repository: ExampleRepository
 
-  constructor(repository: ExampleRepository) {
+  constructor(repository: ExampleRepository = new DatabaseExampleRepository()) {
     this.#repository = repository
   }
 

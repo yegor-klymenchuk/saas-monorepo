@@ -58,6 +58,21 @@ Use Node.js 22.13+ and pnpm 9.15.4. Install dependencies with `pnpm install`. Ea
 6. **Extract helpers only when they simplify the test.** Keep straightforward endpoint calls and assertions inline. Put reusable workflow helpers in the app's `test/helpers/` folder when authentication, payload construction, webhook delivery, or multiple steps introduce meaningful boilerplate. Name helpers after the action, such as `createPurchase` or `createDispute`. Helpers must call the real endpoint or handler rather than reproduce business logic or seed its result directly
 7. **Keep scenarios easy to review.** Make the starting context, action, and expected result clear. Assert relevant response statuses, stable error names, and persisted effects. Keep assertions specific to the behavior under test, and add short comments only where setup or sequencing needs explanation
 
+## Test setup and readability
+
+- Prioritize readable, self-contained scenarios over eliminating repeated setup
+- Keep the values and state that explain the expected behavior visible in the test
+- Create business fixtures inside each test. For complex prerequisites, use a small, cohesive setup function located beside the tests
+- Avoid chains of scenario helpers that require reading several files to understand one test
+- Share focused fixture factories when they represent a clear domain operation and have meaningful reuse
+- Let fixture factories accept typed overrides so each test can show relevant differences explicitly
+- Keep request construction, actions and assertions visible in endpoint tests
+- Add helpers as concrete reuse emerges. Avoid speculative options for future scenarios
+- Add short comments explaining non-obvious setup, ordering or state transitions
+- Allow modest duplication when extraction would make the scenario harder to follow
+
+Reference: [Google's guidance on DAMP (Descriptive And Meaningful Phrases) and test code sharing](https://abseil.io/resources/swe-book/html/ch12.html#tests_and_code_sharing_dampcomma_not_dr)
+
 ## Code style
 
 - **Keep logic inline by default.** When logic is used in only one place, keep its implementation close to that usage so the behavior can be understood without jumping between functions or files. Extract a helper or abstraction when it provides meaningful reuse across existing call sites, preserves an established architectural boundary, or makes complex logic substantially easier to understand. Do not add wrappers, utility files, or extra layers merely to shorten a function or anticipate future reuse. Prefer code that is easy to locate, follow, and review over unnecessary indirection
