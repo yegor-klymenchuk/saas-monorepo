@@ -55,6 +55,24 @@ test('generated router code is ignored', async () => {
   assert.equal(await eslint.isPathIgnored(`${root}/apps/web/src/routeTree.gen.ts`), true)
 })
 
+test('locales use their own TypeScript project from either working directory', async () => {
+  const localesEslint = new ESLint({ cwd: `${root}/packages/locales` })
+  const filePath = `${root}/packages/locales/src/default/auth.ts`
+
+  for (const instance of [eslint, localesEslint]) {
+    const config = await instance.calculateConfigForFile(filePath)
+
+    assert.equal(config.languageOptions.parserOptions.projectService, false)
+    assert.equal(config.languageOptions.parserOptions.project, './packages/locales/tsconfig.json')
+    assert.equal(config.rules['@typescript-eslint/no-floating-promises'][0], 2)
+
+    const results = await instance.lintFiles([`${root}/packages/locales/src/**/*.ts`])
+
+    assert.ok(results.length > 1)
+    assert.ok(!results.some((result) => result.errorCount > 0), JSON.stringify(results))
+  }
+})
+
 test('expressions are separated from declarations while consecutive calls and declarations can stay together', async () => {
   const filePath = `${root}/eslint/padding-example.js`
   const invalid = await eslint.lintText(

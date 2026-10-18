@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { Trans, useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import z from 'zod'
 
@@ -20,17 +21,21 @@ import {
 import { signIn } from '../api/sign-in'
 import { signInWithGoogle as handleSignInWithGoogle } from '../api/sign-in-with-google'
 
-const signInFormSchema = z.object({
-  email: z.email({
-    error: (issue) =>
-      typeof issue.input === 'string' && issue.input.length === 0 ? 'Email is required' : 'Invalid email address',
-  }),
-  password: z.string().min(8, { error: 'Password must be at least 8 characters long' }),
-})
-
 interface SignInFormProps extends React.ComponentProps<'div'> {}
 
 export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) => {
+  const { t } = useTranslation('auth')
+
+  const signInFormSchema = z.object({
+    email: z.email({
+      error: (issue) =>
+        typeof issue.input === 'string' && issue.input.length === 0
+          ? t('validation.email.required')
+          : t('validation.email.invalid'),
+    }),
+    password: z.string().min(8, { error: t('validation.password.minimum', { count: 8 }) }),
+  })
+
   const signInMutation = useMutation({
     mutationFn: signIn,
   })
@@ -64,24 +69,31 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardTitle>{t('signIn.title')}</CardTitle>
+          <CardDescription>{t('signIn.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <form.AppField name="email">
-                {(field) => <field.TextField label="Email" type="email" placeholder="m@example.com" required />}
+                {(field) => (
+                  <field.TextField
+                    label={t('fields.email.label')}
+                    type="email"
+                    placeholder={t('fields.email.placeholder')}
+                    required
+                  />
+                )}
               </form.AppField>
               <form.AppField name="password">
                 {(field) => (
                   <field.TextField
-                    label="Password"
+                    label={t('fields.password.label')}
                     type="password"
                     required
                     labelExtra={
                       <a href="#" className="inline-block text-sm underline-offset-4 hover:underline">
-                        Forgot your password?
+                        {t('signIn.forgotPassword')}
                       </a>
                     }
                   />
@@ -91,13 +103,13 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
               <FieldGroup>
                 <Field>
                   <form.AppForm>
-                    <form.SubmitButton label="Login" />
+                    <form.SubmitButton label={t('signIn.submit')} />
                   </form.AppForm>
                   <Button variant="outline" type="button" onClick={handleSignInWithGoogle}>
-                    Continue with Google
+                    {t('providers.google.action')}
                   </Button>
                   <FieldDescription className="text-center">
-                    Don&apos;t have an account? <Link to="/sign-up">Sign up</Link>
+                    <Trans t={t} i18nKey="signIn.noAccount" components={{ signUp: <Link to="/sign-up" /> }} />
                   </FieldDescription>
                 </Field>
               </FieldGroup>

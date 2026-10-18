@@ -7,7 +7,7 @@ import { App } from '@/app/App'
 import appCss from '@/app/styles.css?url'
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
       {
         charSet: 'utf-8',
@@ -17,7 +17,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: match.context.i18n.t('app.title'),
       },
     ],
     links: [
@@ -32,15 +32,15 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const { queryClient, trpcClient } = Route.useRouteContext()
+  const { i18n, queryClient, trpcClient } = Route.useRouteContext()
 
   return (
-    <html lang="en">
+    <html lang={i18n.resolvedLanguage} dir={i18n.dir()}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <App queryClient={queryClient} trpcClient={trpcClient}>
+        <App i18n={i18n} queryClient={queryClient} trpcClient={trpcClient}>
           {children}
         </App>
         <Scripts />

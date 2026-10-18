@@ -116,4 +116,13 @@ export default [
     languageOptions: { parserOptions: { projectService: true } },
     rules: { '@typescript-eslint/no-floating-promises': 'error' },
   },
+  {
+    files: ['packages/locales/src/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: './packages/locales/tsconfig.json',
+      },
+    },
+  },
 ]

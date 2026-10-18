@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next'
+
 export function HomePage(): React.JSX.Element {
+  const { t } = useTranslation('home')
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-8">
       <div className="max-w-4xl w-full space-y-8">
@@ -30,8 +34,10 @@ export function HomePage(): React.JSX.Element {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Sign In</h3>
-                <p className="text-sm text-muted-foreground">Access your account with email/password or Google OAuth</p>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                  {t('navigation.signIn.title')}
+                </h3>
+                <p className="text-sm text-muted-foreground">{t('navigation.signIn.description')}</p>
               </div>
             </div>
           </a>
@@ -52,8 +58,10 @@ export function HomePage(): React.JSX.Element {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Sign Up</h3>
-                <p className="text-sm text-muted-foreground">Create a new account to get started with the platform</p>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                  {t('navigation.signUp.title')}
+                </h3>
+                <p className="text-sm text-muted-foreground">{t('navigation.signUp.description')}</p>
               </div>
             </div>
           </a>
@@ -78,10 +86,10 @@ export function HomePage(): React.JSX.Element {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Dashboard</h3>
-                <p className="text-sm text-muted-foreground">
-                  View your profile and account details (requires authentication)
-                </p>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                  {t('navigation.dashboard.title')}
+                </h3>
+                <p className="text-sm text-muted-foreground">{t('navigation.dashboard.description')}</p>
               </div>
             </div>
           </a>
@@ -89,7 +97,7 @@ export function HomePage(): React.JSX.Element {
 
         {/* Tech Stack */}
         <div className="pt-8 border-t border-border">
-          <p className="text-center text-sm text-muted-foreground mb-4">Built with</p>
+          <p className="text-center text-sm text-muted-foreground mb-4">{t('technology.title')}</p>
           <div className="flex flex-wrap justify-center gap-3">
             <span className="px-3 py-1 text-xs rounded-full bg-muted text-muted-foreground">TanStack Router</span>
             <span className="px-3 py-1 text-xs rounded-full bg-muted text-muted-foreground">TanStack Start</span>

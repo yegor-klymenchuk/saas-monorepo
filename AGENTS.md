@@ -1,6 +1,6 @@
 # Repository overview
 
-This pnpm workspace contains a SaaS pricing intelligence platform. `apps/web` is the React and TanStack Start application. `apps/api` is the Express and tRPC API, using Better Auth and PostgreSQL through Drizzle. `packages/` is reserved for shared workspace packages and currently has no active package manifest. This repository does not use Turborepo.
+This pnpm workspace contains a SaaS pricing intelligence platform. `apps/web` is the React and TanStack Start application. `apps/api` is the Express and tRPC API, using Better Auth and PostgreSQL through Drizzle. `packages/locales` contains shared English translation resources. This repository does not use Turborepo.
 
 Use Node.js 22.13+ and pnpm 9.15.4. Install dependencies with `pnpm install`. Each app has its own environment files, based on its `.env.example`. Never commit secrets.
 

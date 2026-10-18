@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { Trans, useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import z from 'zod'
 
@@ -20,19 +21,23 @@ import {
 import { signInWithGoogle as handleSignInWithGoogle } from '../api/sign-in-with-google'
 import { signUp } from '../api/sign-up'
 
-const signUpFormSchema = z.object({
-  name: z.string().min(1, { error: 'Name is required' }),
-  email: z.email({
-    error: (issue) =>
-      typeof issue.input === 'string' && issue.input.length === 0 ? 'Email is required' : 'Invalid email address',
-  }),
-  password: z.string().min(8, { error: 'Password must be at least 8 characters long' }),
-  confirmPassword: z.string().min(8, { error: 'Password must be at least 8 characters long' }),
-})
-
 interface SignUpFormProps extends React.ComponentProps<'div'> {}
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) => {
+  const { t } = useTranslation('auth')
+
+  const signUpFormSchema = z.object({
+    name: z.string().min(1, { error: t('validation.name.required') }),
+    email: z.email({
+      error: (issue) =>
+        typeof issue.input === 'string' && issue.input.length === 0
+          ? t('validation.email.required')
+          : t('validation.email.invalid'),
+    }),
+    password: z.string().min(8, { error: t('validation.password.minimum', { count: 8 }) }),
+    confirmPassword: z.string().min(8, { error: t('validation.password.minimum', { count: 8 }) }),
+  })
+
   const signUpMutation = useMutation({
     mutationFn: signUp,
   })
@@ -68,50 +73,56 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) =
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>Enter your information below to create your account</CardDescription>
+          <CardTitle>{t('signUp.title')}</CardTitle>
+          <CardDescription>{t('signUp.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <form.AppField name="name">
                 {(field) => (
-                  <field.TextField label="Full Name" name="name" type="text" placeholder="John Doe" required />
+                  <field.TextField
+                    label={t('fields.name.label')}
+                    name="name"
+                    type="text"
+                    placeholder={t('fields.name.placeholder')}
+                    required
+                  />
                 )}
               </form.AppField>
               <form.AppField name="email">
                 {(field) => (
                   <field.TextField
-                    label="Email"
+                    label={t('fields.email.label')}
                     name="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder={t('fields.email.placeholder')}
                     required
-                    description="We'll use this to contact you. We will not share your email with anyone else."
+                    description={t('fields.email.description')}
                   />
                 )}
               </form.AppField>
               <form.AppField name="password">
                 {(field) => (
                   <field.TextField
-                    label="Password"
+                    label={t('fields.password.label')}
                     name="password"
                     type="password"
                     placeholder="********"
                     required
-                    description="Must be at least 8 characters long."
+                    description={t('fields.password.description', { count: 8 })}
                   />
                 )}
               </form.AppField>
               <form.AppField name="confirmPassword">
                 {(field) => (
                   <field.TextField
-                    label="Confirm Password"
+                    label={t('fields.confirmPassword.label')}
                     name="confirmPassword"
                     type="password"
                     placeholder="********"
                     required
-                    description="Please confirm your password."
+                    description={t('fields.confirmPassword.description')}
                   />
                 )}
               </form.AppField>
@@ -119,13 +130,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) =
               <FieldGroup>
                 <Field>
                   <form.AppForm>
-                    <form.SubmitButton label="Create Account" />
+                    <form.SubmitButton label={t('signUp.submit')} />
                   </form.AppForm>
                   <Button variant="outline" type="button" onClick={handleSignInWithGoogle}>
-                    Continue with Google
+                    {t('providers.google.action')}
                   </Button>
                   <FieldDescription className="px-6 text-center">
-                    Already have an account? <Link to="/sign-in">Sign in</Link>
+                    <Trans t={t} i18nKey="signUp.hasAccount" components={{ signIn: <Link to="/sign-in" /> }} />
                   </FieldDescription>
                 </Field>
               </FieldGroup>

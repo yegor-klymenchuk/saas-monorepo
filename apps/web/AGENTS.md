@@ -32,6 +32,6 @@ Run from the repository root:
 - `pnpm --filter web start`: run the built server
 - `pnpm --filter web typecheck`
 - `pnpm --filter web lint`: ESLint and FSD checks
-- `pnpm --filter web test`: run web tests, currently no application test suite
+- `pnpm --filter web test`: run web tests
 
 Use `.env` based on `.env.example`. Only public configuration belongs in `VITE_*` variables. Import API contracts only as types through `api/trpc`. Keep inferred router and tRPC factory types intact.

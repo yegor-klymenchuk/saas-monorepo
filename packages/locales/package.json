@@ -1,0 +1,11 @@
+{
+  "name": "locales",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./src/default/index.ts"
+  }
+}

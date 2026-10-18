@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
+import { useTranslation } from 'react-i18next'
 
 import type { SessionResponse } from '@/shared/api'
 
@@ -8,9 +9,11 @@ import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitl
 
 interface DashboardPageProps {
   currentSession: SessionResponse
+  now: number
 }
 
-export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX.Element {
+export function DashboardPage({ currentSession, now }: DashboardPageProps): React.JSX.Element {
+  const { t, i18n } = useTranslation(['dashboard', 'common'])
   const navigate = useNavigate()
 
   const signOut = useServerFn(signOutServer)
@@ -24,7 +27,8 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
   const session = currentSession.session
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(i18n.resolvedLanguage, {
+      timeZone: 'UTC',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -39,11 +43,11 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
         {/* Header Section */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back! Here's your account overview.</p>
+            <h1 className="text-4xl font-bold tracking-tight">{t('page.title')}</h1>
+            <p className="text-muted-foreground mt-2">{t('page.description')}</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
-            Logout
+            {t('common:actions.signOut')}
           </Button>
         </div>
 
@@ -54,7 +58,7 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
               {/* Avatar */}
               <div className="relative">
                 <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-3xl font-bold ring-4 ring-primary/10">
-                  {user.name?.charAt(0).toUpperCase() || 'U'}
+                  {user.name?.charAt(0).toUpperCase() || t('profile.avatar.fallback')}
                 </div>
                 {user.emailVerified && (
                   <div className="absolute -bottom-1 -right-1 bg-green-500 text-white rounded-full p-1.5">
@@ -72,8 +76,8 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
               {/* User Info */}
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold">{user.name || 'User'}</h2>
-                  {user.emailVerified && <Badge variant="secondary">Verified</Badge>}
+                  <h2 className="text-2xl font-bold">{user.name || t('profile.name.fallback')}</h2>
+                  {user.emailVerified && <Badge variant="secondary">{t('profile.email.verified')}</Badge>}
                 </div>
                 <p className="text-muted-foreground flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -83,7 +87,7 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
                   {user.email}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  User ID: <code className="text-xs bg-muted px-2 py-0.5 rounded">{user.id}</code>
+                  {t('profile.userId.label')} <code className="text-xs bg-muted px-2 py-0.5 rounded">{user.id}</code>
                 </p>
               </div>
             </div>
@@ -95,24 +99,24 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
           {/* Account Status Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Account Status</CardTitle>
-              <CardDescription>Your account verification status</CardDescription>
+              <CardTitle>{t('account.status.title')}</CardTitle>
+              <CardDescription>{t('account.status.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Email Verified</span>
+                  <span className="text-sm font-medium">{t('account.emailVerified.label')}</span>
                   <Badge variant={user.emailVerified ? 'default' : 'destructive'}>
-                    {user.emailVerified ? 'Yes' : 'No'}
+                    {user.emailVerified ? t('common:status.yes') : t('common:status.no')}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Account Type</span>
-                  <Badge variant="outline">Standard</Badge>
+                  <span className="text-sm font-medium">{t('account.type.label')}</span>
+                  <Badge variant="outline">{t('account.type.standard')}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Status</span>
-                  <Badge variant="secondary">Active</Badge>
+                  <span className="text-sm font-medium">{t('account.status.label')}</span>
+                  <Badge variant="secondary">{t('account.status.active')}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -121,8 +125,8 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
           {/* Account Created Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Account Created</CardTitle>
-              <CardDescription>When you joined our platform</CardDescription>
+              <CardTitle>{t('account.created.title')}</CardTitle>
+              <CardDescription>{t('account.created.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -134,14 +138,16 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-sm">{user.createdAt ? formatDate(user.createdAt) : 'N/A'}</span>
+                  <span className="text-sm">
+                    {user.createdAt ? formatDate(user.createdAt) : t('common:status.unavailable')}
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-4">
-                  You've been with us for{' '}
-                  {user.createdAt
-                    ? Math.floor((new Date().getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
-                    : 0}{' '}
-                  days
+                  {t('account.membership.duration', {
+                    count: user.createdAt
+                      ? Math.floor((now - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+                      : 0,
+                  })}
                 </p>
               </div>
             </CardContent>
@@ -150,8 +156,8 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
           {/* Last Updated Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Last Updated</CardTitle>
-              <CardDescription>Most recent account changes</CardDescription>
+              <CardTitle>{t('account.updated.title')}</CardTitle>
+              <CardDescription>{t('account.updated.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -163,7 +169,9 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-sm">{user.updatedAt ? formatDate(user.updatedAt) : 'N/A'}</span>
+                  <span className="text-sm">
+                    {user.updatedAt ? formatDate(user.updatedAt) : t('common:status.unavailable')}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -173,19 +181,19 @@ export function DashboardPage({ currentSession }: DashboardPageProps): React.JSX
         {/* Session Info Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Current Session</CardTitle>
-            <CardDescription>Information about your active session</CardDescription>
+            <CardTitle>{t('session.title')}</CardTitle>
+            <CardDescription>{t('session.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-1">
-                <p className="text-sm font-medium">Session ID</p>
+                <p className="text-sm font-medium">{t('session.id.label')}</p>
                 <code className="text-xs bg-muted px-3 py-1.5 rounded block break-all">{session.id}</code>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium">Expires At</p>
+                <p className="text-sm font-medium">{t('session.expires.label')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {session.expiresAt ? formatDate(session.expiresAt) : 'N/A'}
+                  {session.expiresAt ? formatDate(session.expiresAt) : t('common:status.unavailable')}
                 </p>
               </div>
             </div>
